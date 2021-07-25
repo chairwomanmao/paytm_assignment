@@ -30,7 +30,7 @@ val tornadoDatesB = tornadoDates.withColumnRenamed("COUNTRY_FULL","COUNTRY")
 val tornadoDatesNew = tornadoDates.join(tornadoDatesB, tornadoDates("COUNTRY_ABBR") === tornadoDatesB("COUNTRY_ABBR") && tornadoDates("DATE") === date_sub(tornadoDates("DATE"),1), "left" )
 
 //Aggregate/groupBy count the data
-val tornadoConsecutive = tornadoDatesNew.groupBy("COUNTRY_FULL").count.orderBy(asc("count"))
+val tornadoConsecutive = tornadoDatesNew.groupBy("COUNTRY_FULL").count.orderBy(desc("count"))
 tornadoConsecutive.show
 
 //country with second highest mean wind speed
