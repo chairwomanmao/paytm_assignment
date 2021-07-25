@@ -26,12 +26,15 @@ val tornadoDf = globalWeatherDf.filter(globalWeatherDf("FRSHTT").rlike("1$") )
 //convert YEARMODA to proper date column
 val tornadoDates = tornadoDf.withColumn("date", to_timestamp(col("YEARMODA"),"yyyyMMdd"))
 val tornadoDatesB = tornadoDates.withColumnRenamed("COUNTRY_FULL","COUNTRY")
-//Perform a self-join on tornadoDates, if there is a match between a country, and a day vs day-1, then return the row
+//Perform a self-join on tornadoDates, if there is a match between a country, and a day vs day-1 (yesterday), then return the row
 val tornadoDatesNew = tornadoDates.join(tornadoDatesB, tornadoDates("COUNTRY_ABBR") === tornadoDatesB("COUNTRY_ABBR") && tornadoDates("DATE") === date_sub(tornadoDates("DATE"),1), "left" )
 
 //Aggregate/groupBy count the data
 val tornadoConsecutive = tornadoDatesNew.groupBy("COUNTRY_FULL").count.orderBy(desc("count"))
 tornadoConsecutive.show
+
+//There is probably a mistake I made with the self-join, didn't have time to debug it
+
 
 //country with second highest mean wind speed
 //wording of question is mildly ambiguous.  If we're looking for the second highest wdsp for each country, we would use a window function.  Otherwise, if we're looking for the country with the secound highest wdsp, then just do groupby/agg(mean)/orderByDesc, and the last row of the subset of the first two rows
